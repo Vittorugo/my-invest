@@ -1,11 +1,31 @@
 import 'antd/dist/antd.css';
-import { Form, Button, Layout, Menu, message, Input, InputNumber, DatePicker } from 'antd';
+import { Form, Button, Layout, Menu, message, Input, InputNumber, DatePicker, Select } from 'antd';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import InvestimentoService from '../../services/InvestimentoService';
+import CategoriaService from '../../services/CategoriaService';
 
 const { Header, Content, Footer } = Layout;
+const { Option } = Select;
 
 export default function CadastrarInvestimento() {
+
+   const [categorias, setCategorias] = useState([]);
+   const [categoria, setCategoria] = useState();
+
+   useEffect( () => {
+      refreshCategorias();
+   },[]);
+
+   async function refreshCategorias(){
+      CategoriaService.retrieveAllCategorias().then(response => {
+         setCategorias(response.data);
+      })
+   }
+
+   function handleChange(value) {
+      setCategoria(value);
+   }
 
    const layout = {
       labelCol: { span: 4 },
@@ -16,7 +36,8 @@ export default function CadastrarInvestimento() {
     };
 
    const onFinish = (values) => {
-      message.success("Investimento salvo com sucesso!")
+      InvestimentoService.salveInvestimento(values);
+      message.success("Investimento salvo com sucesso!");
    }
 
    const onFinishFailed = (errorInfo) => {
@@ -60,6 +81,15 @@ export default function CadastrarInvestimento() {
                      ]}>
                         <Input />
                      </Form.Item>
+                     <Form.Item label='Valor'
+                        name='valorCota'
+                        rules={[{
+                           required:true,
+                           message: 'Insira o valor da cota!',
+                        },
+                     ]}>
+                        <InputNumber />
+                     </Form.Item>
                      <Form.Item label='Quantidade de cotas'
                         name='quantidadeCotas'
                         rules={[{
@@ -77,6 +107,24 @@ export default function CadastrarInvestimento() {
                         },
                      ]}>
                         <DatePicker />
+                     </Form.Item>
+
+                     <Form.Item label='Categoria'
+                        name='categoria'
+                        rules={[{
+                           required:false,
+                           message: 'Insira a categoria!',
+                        },
+                     ]}>
+                        <Select  onChange={handleChange} >
+                           {categorias.map( (item,index) => {
+                              return(
+                                 <Option key={item.id} value={item.id}>
+                                    {item.nome}
+                                 </Option>
+                              )
+                           })}
+                        </Select>
                      </Form.Item>
 
                      <Form.Item {...tailLayout}>
