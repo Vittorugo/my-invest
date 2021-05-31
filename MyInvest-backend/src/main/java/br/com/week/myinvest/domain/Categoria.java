@@ -10,13 +10,13 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public Long codigo;
+    private Long codigo;
 
     private String nome;
 
     private String descricao;
 
-    @OneToMany(mappedBy = "categoria")
+    @OneToMany(mappedBy = "categoria",fetch = FetchType.LAZY)
     private List<Investimento> investimento;
 
     public List<Investimento> getInvestimento() {

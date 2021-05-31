@@ -20,7 +20,7 @@ public class Investimento {
 
     private LocalDate dataCompra;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_codigo_categoria")
     public Categoria categoria;
 
